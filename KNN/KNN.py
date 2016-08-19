@@ -3,7 +3,7 @@ Created on 18 de ago de 2016
 
 @author: Raul
 '''
-#coding:utf-8
+#encoding: utf-8
 import math
 
 class KNN(object):
@@ -21,22 +21,25 @@ class KNN(object):
     
     #Método responsavel por classificar a qual classe cada ponto
     #de um conjunto pertence
-    def classificar(self,vTeste,K):
+    def classificar(self,vTeste,K,tipo):#tipo=c para classificação e outro para regressão
         for pTeste in vTeste:#percorre o vetor de pontos teste
             distancias=[]#armazena as distâncias entre o ponto de teste e todos os pontos de treino
             for pTreino in self.vTreino:#percorre o vetor de treino
                 distancia = self.__distanciaPontos(pTeste, pTreino)
-                distancias.append([pTreino.nomeClasse,distancia,pTreino.vValores])
+                distancias.append([pTreino.nomeClasse,distancia])
             distancias.sort(key=lambda x:x[1], reverse=False)#Organiza as distância do menor pro maior
             qtMaisApareceu=0
             classe = ""
             #Verifica as K menores distânticias e determina a qual
             #classe o ponto vai pertencer
-            for i in distancias[0:K]:
-                cont = self.__contarClasses(distancias[0:K], i[0])
-                if(cont > qtMaisApareceu):
-                    qtMaisApareceu = cont
-                    classe = i[0]
+            if(tipo=="c"):
+                for i in distancias[0:K]:
+                    cont = self.__contarClasses(distancias[0:K], i[0])
+                    if(cont > qtMaisApareceu):
+                        qtMaisApareceu = cont
+                        classe = i[0]
+            else:
+                classe = self.__calcularMedia(distancias[0:K])
             pTeste.nomeClasse = classe
     
     def __contarClasses(self,distancias,nomeClasse):
@@ -45,6 +48,13 @@ class KNN(object):
             if(i[0]==nomeClasse):
                 cont+=1
         return cont
+    
+    def __calcularMedia(self,distancias):
+        media = 0
+        for classe in distancias:
+            media+=float(classe[0])
+        media = media/len(distancias)
+        return media
                 
             
             
